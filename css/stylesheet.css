@@ -21,7 +21,7 @@ div li a:hover {
 	text-decoration:none;
 }
 .logout {
-	right:0 px;
+	float:right;
 }
 #content {
 	width:80%;
