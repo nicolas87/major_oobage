@@ -26,6 +26,21 @@ class MainPage(webapp2.RequestHandler):
       self.response.out.write(template.render(template_values))
     else:
       self.redirect(self.request.host_url)
+	  
+class Persons(db.Model):
+  """Models a person identified by email"""
+  email = db.StringProperty()
+  
+class Freeslots(db.Model):
+  """Models a freeslot with free_month, free_day, free_year, free_start_hour, free_start_min, free_end_hour and free_end_min."""
+  free_month = db.StringProperty()
+  free_day = db.StringProperty()
+  free_year = db.StringProperty()
+  free_start_hour = db.StringProperty()
+  free_start_min = db.StringProperty()
+  free_end_hour = db.StringProperty()
+  free_end_min = db.StringProperty()
+  
 
 class AddFreeSlots(webapp2.RequestHandler):
   """ Add freeslots to the datastore """
@@ -45,6 +60,7 @@ class AddFreeSlots(webapp2.RequestHandler):
     freeslot.free_start_min = self.request.get('start_min')
     freeslot.free_end_hour = self.request.get('end_hour')
     freeslot.free_end_min = self.request.get('end_min')
+    self.redirect('/myfreeslots')
 	
 class MyFreeSlots(webapp2.RequestHandler):
   """ Form for getting and displaying wishlist items. """

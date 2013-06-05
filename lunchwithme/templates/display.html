@@ -31,6 +31,7 @@
 							<li><a href="/myfreeslots">My Free Slots</a></li>
 							<li class="active"><a href="/friends">Friends</a></li>
 						</ul>
+						<p style="position:absolute; TOP:10px; LEFT:1300px"> Welcome, {{ user_mail }}!</p>
 						<!-- .nav, .navbar-search, .navbar-form, etc -->
 					</div>
  
@@ -46,9 +47,9 @@
 	<tbody>
 	  {% for freeslot in freeslots %}
 	  <tr>
-		<td>{{ freeslot.day }} {{ freeslot.month }} {{ freeslot.year }} </td>
-	    <td>{{ freeslot.start_hour  }} : {{ freeslot.start_min }}</td>
-		<td>{{ freeslot.end_hour  }} : {{ freeslot.end_min }}</td>
+		<td>{{ freeslot.free_day }} {{ freeslot.free_month }} {{ freeslot.free_year }} </td>
+	    <td>{{ freeslot.free_start_hour  }} : {{ freeslot.free_start_min }}</td>
+		<td>{{ freeslot.free_end_hour  }} : {{ freeslot.free_end_min }}</td>
 	  </tr>
 	  {% endfor %}
 	</tbody>
