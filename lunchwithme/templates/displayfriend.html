@@ -10,7 +10,7 @@
 	</head>
 	
 	<body>
-			<div class="navbar">
+		<div class="navbar">
 			<div class="navbar-inner">
 				<div class="container">
  
@@ -23,13 +23,13 @@
  
 					<!-- Be sure to leave the brand out there if you want it shown -->
 					<a class="brand" href="#">Lunch with Me!</a>
-					
+ 
 					<!-- Everything you want hidden at 940px or less, place within here -->
 					<div class="nav-collapse collapse">
 						<ul class="nav">
-							<li class="active"><a href="/lunchwithme">Home</a></li>
+							<li><a href="/lunchwithme">Home</a></li>
 							<li><a href="/myfreeslots">My Free Slots</a></li>
-							<li><a href="/friends">Friends</a></li>
+							<li class="active"><a href="/friends">Friends</a></li>
 							<li><a href="/date">Who's free?</a></li>
 							<li><a href="{{ logout }}">Logout</a></li>
 						</ul>
@@ -40,7 +40,23 @@
 				</div>
 			</div>
 		</div>
-		<p> No more lonely lunches alone! Check out who's free to lunch with you now!</p>
+	  
+	<h4> Free Slots of {{ target_mail }} </h4>
+      <table class="table table-bordered table-striped" >
+	<thead>
+	  <tr><th width="25%">Date</th><th width="25%">From</th><th width="25%">To</th><th width="25%">At</th></tr>
+	</thead>
+	<tbody>
+	  {% for freeslot in freeslots %}
+	  <tr>
+		<td>{{ freeslot.free_day }} {{ freeslot.free_month }} {{ freeslot.free_year }} </td>
+	    <td>{{ freeslot.free_start_hour  }} : {{ freeslot.free_start_min }}</td>
+		<td>{{ freeslot.free_end_hour  }} : {{ freeslot.free_end_min }}</td>
+		<td>{{ freeslot.free_venue  }}</td>
+	  </tr>
+	  {% endfor %}
+	</tbody>
+      </table>
 		<script src="http://code.jquery.com/jquery.js"></script>
 		<script src="js/bootstrap.min.js"></script>
 	</body>

@@ -19,10 +19,23 @@ indexes:
   - name: start_min
   - name: end_hour
   - name: end_min
+  - name: venue
     direction: desc
 
 - kind: Freeslots
   ancestor: yes
   properties:
   - name: date
+    direction: desc
+
+- kind: Freeslots
+  ancestor: yes
+  properties:
+  - name: free_month
+    direction: desc
+
+- kind: Freeslots
+  ancestor: yes
+  properties:
+  - name: free_year
     direction: desc

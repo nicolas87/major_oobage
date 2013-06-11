@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="../stylesheets/main.css"/>
+		<!-- Bootstrap -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
+		<link href="../bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+		<title>Lunch with Me</title>
+	</head>
+	
+	<body>
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="container">
+ 
+					<!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</a>
+ 
+					<!-- Be sure to leave the brand out there if you want it shown -->
+					<a class="brand" href="#">Lunch with Me!</a>
+ 
+					<!-- Everything you want hidden at 940px or less, place within here -->
+					<div class="nav-collapse collapse">
+						<ul class="nav">
+							<li><a href="/lunchwithme">Home</a></li>
+							<li><a href="/myfreeslots">My Free Slots</a></li>
+							<li><a href="/friends">Friends</a></li>
+							<li class="active"><a href="/date">Who's free?</a></li>
+							<li><a href="{{ logout }}">Logout</a></li>
+						</ul>
+						<p style="position:absolute; TOP:10px; LEFT:1300px"> Welcome, {{ user_mail }}!</p>
+						<!-- .nav, .navbar-search, .navbar-form, etc -->
+					</div>
+ 
+				</div>
+			</div>
+		</div>
+		
+		<form  action="/displaydate" method="post">  
+	<fieldset>
+	  <div class = "row-fluid">
+	    <p> Enter the date you're free for lunch: </p>
+	    <div class="span12">  
+			<select name="day">
+				<option value="1">1
+				<option value="2">2
+				<option value="3">3
+				<option value="4">4
+				<option value="5">5
+				<option value="6">6
+				<option value="7">7
+				<option value="8">8
+				<option value="9">9
+				<option value="10">10
+				<option value="11">11
+				<option value="12">12
+				<option value="13">13
+				<option value="14">14
+				<option value="15">15
+				<option value="16">16
+				<option value="17">17
+				<option value="18">18
+				<option value="19">19
+				<option value="20">20
+				<option value="21">21
+				<option value="22">22
+				<option value="23">23
+				<option value="24">24
+				<option value="25">25
+				<option value="26">26
+				<option value="27">27
+				<option value="28">28
+				<option value="29">29
+				<option value="30">30
+				<option value="31">31
+			</select>
+			<select name="month">
+				<option value="1">January
+				<option value="2">February
+				<option value="3">March
+				<option value="4">April
+				<option value="5">May
+				<option value="6">June
+				<option value="7">July
+				<option value="8">August
+				<option value="9">September
+				<option value="10">October
+				<option value="11">November
+				<option value="12">December
+			</select>
+			<select name="year">
+				<option value="2002">2013
+				<option value="2003">2014
+				<option value="2004">2015
+				<option value="2005">2016
+			</select>
+	    </div>
+		<p> <input type="submit" value="Submit"></p>
+	</fieldset>
+      </form>	
+		<script src="http://code.jquery.com/jquery.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+	</body>
+</html>

@@ -30,6 +30,7 @@
 							<li><a href="/lunchwithme">Home</a></li>
 							<li><a href="/myfreeslots">My Free Slots</a></li>
 							<li class="active"><a href="/friends">Friends</a></li>
+							<li><a href="/date">Who's free?</a></li>
 							<li><a href="{{ logout }}">Logout</a></li>
 						</ul>
 						<p style="position:absolute; TOP:10px; LEFT:1300px"> Welcome, {{ user_mail }}!</p>
@@ -40,7 +41,7 @@
 			</div>
 		</div>
 		
-		<form  action="/display" method="post">  
+		<form  action="/displayfriend" method="post">  
 	<fieldset>
 	  <div class = "row-fluid">
 	    <p> Enter the email of the person you wish to search for: </p>

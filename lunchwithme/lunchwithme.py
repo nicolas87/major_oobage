@@ -31,8 +31,14 @@ class Persons(db.Model):
   """Models a person identified by email"""
   email = db.StringProperty()
   
+class Date(db.Model):
+  """Models date entered by user"""
+  search_month = db.StringProperty()
+  search_day = db.StringProperty()
+  search_year = db.StringProperty()
+  
 class Freeslots(db.Model):
-  """Models a freeslot with free_month, free_day, free_year, free_start_hour, free_start_min, free_end_hour and free_end_min."""
+  """Models a freeslot with free_month, free_day, free_year, free_start_hour, free_start_min, free_end_hour, free_end_min and free_venue."""
   free_month = db.StringProperty()
   free_day = db.StringProperty()
   free_year = db.StringProperty()
@@ -40,8 +46,9 @@ class Freeslots(db.Model):
   free_start_min = db.StringProperty()
   free_end_hour = db.StringProperty()
   free_end_min = db.StringProperty()
+  free_venue = db.StringProperty()
+  select = db.StringProperty()
   
-
 class AddFreeSlots(webapp2.RequestHandler):
   """ Add freeslots to the datastore """
   def post(self):
@@ -60,6 +67,30 @@ class AddFreeSlots(webapp2.RequestHandler):
     freeslot.free_start_min = self.request.get('start_min')
     freeslot.free_end_hour = self.request.get('end_hour')
     freeslot.free_end_min = self.request.get('end_min')
+    freeslot.free_venue = self.request.get('venue')
+    freeslot.select = self.request.get('select')
+    freeslot.put()
+    self.redirect('/myfreeslots')	
+
+class DelFreeSlots(webapp2.RequestHandler):
+  """ Del freeslots to the datastore """
+  def post(self):	
+	# Delete freeslots
+    delete_freeslots = db.GqlQuery("SELECT * "
+                                   "FROM Freeslots "
+                                   "WHERE freeslot.select='YES'",
+                                  ) 
+    result = delete_freeslots.get()
+    db.delete(result)
+	
+    template_values = {
+        'user_mail': users.get_current_user().email(),
+        'logout': users.create_logout_url(self.request.host_url),
+        'freeslots': query,
+        } 
+		
+    template = jinja_environment.get_template('myfreeslots.html')
+    self.response.out.write(template.render(template_values))	
     self.redirect('/myfreeslots')
 	
 class MyFreeSlots(webapp2.RequestHandler):
@@ -74,8 +105,9 @@ class MyFreeSlots(webapp2.RequestHandler):
       query = db.GqlQuery("SELECT * "
                           "FROM Freeslots "
                           "WHERE ANCESTOR IS :1 "
-                          "ORDER BY date DESC",
-                          parent_key)
+                          "ORDER BY free_month DESC",
+                          parent_key
+						 )
 
       template_values = {
         'user_mail': users.get_current_user().email(),
@@ -89,7 +121,7 @@ class MyFreeSlots(webapp2.RequestHandler):
       self.redirect(self.request.host_url)
 
 class Friends(webapp2.RequestHandler):
-  """ Display search page """
+  """ Display search friends page """
   def get(self):
     user = users.get_current_user()
     if user:  # signed in already
@@ -101,9 +133,23 @@ class Friends(webapp2.RequestHandler):
       self.response.out.write(template.render(template_values))
     else:
       self.redirect(self.request.host_url)
+
+class Date(webapp2.RequestHandler):
+  """ Display search date page """
+  def get(self):
+    user = users.get_current_user()
+    if user:  # signed in already
+      template_values = {
+        'user_mail': users.get_current_user().email(),
+        'logout': users.create_logout_url(self.request.host_url),
+        } 
+      template = jinja_environment.get_template('date.html')
+      self.response.out.write(template.render(template_values))
+    else:
+      self.redirect(self.request.host_url)
 	  
-class Display(webapp2.RequestHandler):
-  """ Displays search result """
+class DisplayFriends(webapp2.RequestHandler):
+  """ Displays search friends result """
   def post(self):
 
     target = self.request.get('email').rstrip()
@@ -120,15 +166,41 @@ class Display(webapp2.RequestHandler):
       'user_mail': users.get_current_user().email(),
       'target_mail': target,
       'logout': users.create_logout_url(self.request.host_url),
-      'items': query,
+      'freeslots': query,
       } 
-    template = jinja_environment.get_template('display.html')
+    template = jinja_environment.get_template('displayfriend.html')
+    self.response.out.write(template.render(template_values))
+
+class DisplayDate(webapp2.RequestHandler):
+  """ Displays search date result """
+  def post(self):
+
+    target = self.request.get('date').rstrip()
+    # Retrieve people with common free date
+    parent_key = db.Key.from_path('Date', target)
+
+    query = db.GqlQuery("SELECT * "
+                        "FROM Freeslots "
+                        "WHERE ANCESTOR IS :1 "
+                        "ORDER BY date DESC",
+                        parent_key)
+
+    template_values = {
+      'user_mail': users.get_current_user().email(),
+      'target_date': target,
+      'logout': users.create_logout_url(self.request.host_url),
+      'freeslots': query,
+      } 
+    template = jinja_environment.get_template('displaydate.html')
     self.response.out.write(template.render(template_values))
 
 
 app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
                                ('/friends', Friends),
+                               ('/date', Date),
                                ('/addfreeslots', AddFreeSlots),
+                               ('/delfreeslots', DelFreeSlots),							   
                                ('/myfreeslots', MyFreeSlots),
-                               ('/display', Display)],
+                               ('/displayfriend', DisplayFriends),
+                               ('/displaydate', DisplayDate)],
                               debug=True)

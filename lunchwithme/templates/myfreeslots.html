@@ -30,6 +30,8 @@
 							<li><a href="/lunchwithme">Home</a></li>
 							<li class="active"><a href="/myfreeslots">My Free Slots</a></li>
 							<li><a href="/friends">Friends</a></li>
+							<li><a href="/date">Who's free?</a></li>
+							<li><a href="{{ logout }}">Logout</a></li>
 						</ul>
 						<p style="position:absolute; TOP:10px; LEFT:1300px"> Welcome, {{ user_mail }}!</p>
 						<!-- .nav, .navbar-search, .navbar-form, etc -->
@@ -44,7 +46,7 @@
 		<div class = "row-fluid">
 	    <p> Enter your free date: </p>
 	    <div class="span12">  
-			<select name="day" type="integer">
+			<select name="day">
 				<option value="1">1
 				<option value="2">2
 				<option value="3">3
@@ -77,40 +79,40 @@
 				<option value="30">30
 				<option value="31">31
 			</select>
-			<select name="month" type="integer">
-				<option value="1">January
-				<option value="2">February
-				<option value="3">March
-				<option value="4">April
-				<option value="5">May
-				<option value="6">June
-				<option value="7">July
-				<option value="8">August
-				<option value="9">September
-				<option value="10">October
-				<option value="11">November
-				<option value="12">December
+			<select name="month">
+				<option value="Jan">January
+				<option value="Feb">February
+				<option value="Mar">March
+				<option value="Apr">April
+				<option value="May">May
+				<option value="Jun">June
+				<option value="Jul">July
+				<option value="Aug">August
+				<option value="Sep">September
+				<option value="Oct">October
+				<option value="Nov">November
+				<option value="Dec">December
 			</select>
-			<select name="year" type="integer">
-				<option value="2002">2013
-				<option value="2003">2014
-				<option value="2004">2015
-				<option value="2005">2016
+			<select name="year">
+				<option value="2013">2013
+				<option value="2014">2014
+				<option value="2015">2015
+				<option value="2016">2016
 			</select>
 	    </div>
 		<p> Enter your free time: </p>
 	    <div class="span12"> 
 	      <p>from
-		  <select name="start_hour" type="integer">
-				<option value="1">01
-				<option value="2">02
-				<option value="3">03
-				<option value="4">04
-				<option value="5">05
-				<option value="6">06
-				<option value="7">07
-				<option value="8">08
-				<option value="9">09
+		  <select name="start_hour">
+				<option value="01">01
+				<option value="02">02
+				<option value="03">03
+				<option value="04">04
+				<option value="05">05
+				<option value="06">06
+				<option value="07">07
+				<option value="08">08
+				<option value="09">09
 				<option value="10">10
 				<option value="11">11
 				<option value="12">12
@@ -127,9 +129,9 @@
 				<option value="23">23
 				<option value="24">24
 			</select>:
-			<select name="start_min" type="integer">
-				<option value="0">00
-				<option value="5">05
+			<select name="start_min">
+				<option value="00">00
+				<option value="05">05
 				<option value="10">10
 				<option value="15">15
 				<option value="20">20
@@ -142,16 +144,16 @@
 				<option value="55">55
 			</select> 
 			to	
-			<select name="end_hour" type="integer">
-				<option value="1">01
-				<option value="2">02
-				<option value="3">03
-				<option value="4">04
-				<option value="5">05
-				<option value="6">06
-				<option value="7">07
-				<option value="8">08
-				<option value="9">09
+			<select name="end_hour">
+				<option value="01">01
+				<option value="02">02
+				<option value="03">03
+				<option value="04">04
+				<option value="05">05
+				<option value="06">06
+				<option value="07">07
+				<option value="08">08
+				<option value="09">09
 				<option value="10">10
 				<option value="11">11
 				<option value="12">12
@@ -168,9 +170,9 @@
 				<option value="23">23
 				<option value="24">24
 			</select>:
-			<select name="end_min" type="integer">
-				<option value="0">00
-				<option value="5">05
+			<select name="end_min">
+				<option value="00">00
+				<option value="05">05
 				<option value="10">10
 				<option value="15">15
 				<option value="20">20
@@ -181,28 +183,37 @@
 				<option value="45">45
 				<option value="50">50
 				<option value="55">55
-			</select></p>	
+			</select></p>
+		</div>
+		<div class="row-fluid"> 
+			<p>Venue: <input class = "input-xlarge" type="text" name="venue"></p>
 	    </div>
 	    <br><p><input type="submit" value="Submit"></p>
 	  </div>
 	</fieldset>
       </form>	
-	  
+	  <form  action="/delfreeslots" method="post">  
+	<fieldset>
 	<h4> My Free Slots </h4>
-      <table class="table table-bordered table-striped" >
+      <table class="table table-bordered table-striped" name="myfreeslotstable">
 	<thead>
-	  <tr><th width="30%">Date</th><th>From</th><th>To</th></tr>
+	  <tr><th width="5%"></th><th width="23%">Date</th><th width="23%">From</th><th width="23%">To</th><th width="23%">At</th></tr>
 	</thead>
 	<tbody>
-	  {% for freeslot in Freeslots %}
+	  {% for freeslot in freeslots %}
 	  <tr>
-		<td>{{ freeslot.free_day }} / {{ freeslot.free_month }} / {{ freeslot.free_year }} </td>
+		<td><input type="checkbox" name="select" value="YES" /></td>
+		<td>{{ freeslot.free_day }} {{ freeslot.free_month }} {{ freeslot.free_year }} </td>
 	    <td>{{ freeslot.free_start_hour  }} : {{ freeslot.free_start_min }}</td>
 		<td>{{ freeslot.free_end_hour  }} : {{ freeslot.free_end_min }}</td>
+		<td>{{ freeslot.free_venue  }}</td>
 	  </tr>
 	  {% endfor %}
 	</tbody>
       </table>
+	<br><p><input type="submit" value="Delete"></p>
+	</fieldset>
+      </form>
 		<script src="http://code.jquery.com/jquery.js"></script>
 		<script src="js/bootstrap.min.js"></script>
 	</body>
