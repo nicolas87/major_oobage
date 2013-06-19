@@ -48,7 +48,8 @@ class Freeslots(db.Model):
   free_end_min = db.StringProperty()
   free_venue = db.StringProperty()
   select = db.StringProperty()
-  username = db.StringProperty(required=True)
+  #username = db.StringProperty(required=True)
+  username = db.StringProperty()
   
 class AddFreeSlots(webapp2.RequestHandler):
   """ Add freeslots to the datastore """
@@ -104,7 +105,7 @@ class MyFreeSlots(webapp2.RequestHandler):
     if user:  # signed in already
 
       # Retrieve person
-      parent_key = db.Key.from_path('Persons', users.get_current_user().email())
+     # parent_key = db.Key.from_path('Persons', users.get_current_user().email())
 
       query = Freeslots.gql(
                           "WHERE username = :userN ORDER BY free_month DESC",
