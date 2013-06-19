@@ -4,8 +4,10 @@
 		<link type="text/css" rel="stylesheet" href="../stylesheets/main.css"/>
 		<!-- Bootstrap -->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
+		<!--<link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
 		<link href="../bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+		-->
+		<link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">
 		<title>Lunch with Me</title>
 	</head>
 	
@@ -33,7 +35,8 @@
 							<li><a href="/date">Who's free?</a></li>
 							<li><a href="{{ logout }}">Logout</a></li>
 						</ul>
-						<p style="position:absolute; TOP:10px; LEFT:1300px"> Welcome, {{ user_mail }}!</p>
+						<!--<p style="position:absolute; TOP:10px; LEFT:1300px"> Welcome, {{ user_mail }}!</p>-->
+						<p style="float:right; margin-top:10px"> Welcome, {{ user_mail }}!</p>
 						<!-- .nav, .navbar-search, .navbar-form, etc -->
 					</div>
  
@@ -43,7 +46,7 @@
 		
 		<form  action="/addfreeslots" method="post">  
 	<fieldset>
-		<div class = "row-fluid">
+		<div class = "row-fluid" >
 	    <p> Enter your free date: </p>
 	    <div class="span12">  
 			<select name="day">
@@ -212,7 +215,7 @@
 	  {% endfor %}
 	</tbody>
       </table>
-	<br><p><input type="submit" value="Delete"></p>
+<!--	<br><p><input type="submit" value="Delete"></p> -->
 	</fieldset>
       </form>
 		<script src="http://code.jquery.com/jquery.js"></script>

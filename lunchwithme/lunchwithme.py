@@ -102,6 +102,7 @@ class DelFreeSlots(webapp2.RequestHandler):
      #template = jinja_environment.get_template('myfreeslots.html')
      #self.response.out.write(template.render(template_values))	
      self.redirect('/myfreeslots')
+     self.redirect('/myfreeslots')
     else:
      self.redirect(self.request.host_url)
 	
