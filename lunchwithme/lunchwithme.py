@@ -7,6 +7,7 @@ import datetime
 
 from google.appengine.ext import db
 from google.appengine.api import users
+from google.appengine.ext.webapp import template #added this! to remove?
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + "/templates"))
@@ -48,7 +49,6 @@ class Freeslots(db.Model):
   free_end_min = db.StringProperty()
   free_venue = db.StringProperty()
   select = db.StringProperty()
-  #username = db.StringProperty(required=True)
   username = db.StringProperty()
   
 class AddFreeSlots(webapp2.RequestHandler):
@@ -77,9 +77,9 @@ class AddFreeSlots(webapp2.RequestHandler):
 
 class DelFreeSlots(webapp2.RequestHandler):
   """ Del freeslots to the datastore """
-  def post(self):	
+  def get(self):	
 	# Delete freeslots
-    parent_key = db.Key.from_path('Persons', users.get_current_user().email())
+    #parent_key = db.Key.from_path('Persons', users.get_current_user().email())
     #delete_freeslots = db.GqlQuery("SELECT * "
     #                              "FROM Freeslots "
     #                             "WHERE freeslot.select='YES'",
@@ -87,16 +87,23 @@ class DelFreeSlots(webapp2.RequestHandler):
     #                             ) 
     #result = delete_freeslots.fetch(10)
     #db.delete(result)
-	
-    template_values = {
-        'user_mail': users.get_current_user().email(),
-        'logout': users.create_logout_url(self.request.host_url),
-        'freeslots': query,
-    } 
-		
-    template = jinja_environment.get_template('myfreeslots.html')
-    self.response.out.write(template.render(template_values))	
-    self.redirect('/myfreeslots')
+    user = users.get_current_user()
+    if user:
+     parent_key = db.Key.from_path('Persons', users.get_current_user().email())
+     data_id=self.request.get('delid')
+     query=Freeslots.get_by_id(int(data_id),parent_key)
+     query.delete()
+     #template_values = {
+     #    'user_mail': users.get_current_user().email(),
+     #    'logout': users.create_logout_url(self.request.host_url),
+     #    'freeslots': query,
+     #} 
+     #commented out below. is it necessary?		
+     #template = jinja_environment.get_template('myfreeslots.html')
+     #self.response.out.write(template.render(template_values))	
+     self.redirect('/myfreeslots')
+    else:
+     self.redirect(self.request.host_url)
 	
 class MyFreeSlots(webapp2.RequestHandler):
   """ Form for getting and displaying wishlist items. """
@@ -118,9 +125,9 @@ class MyFreeSlots(webapp2.RequestHandler):
         'freeslots': query,
 		
         } 
-
-      template = jinja_environment.get_template('myfreeslots.html')
-      self.response.out.write(template.render(template_values))
+      self.response.out.write(template.render('templates/myfreeslots.html', template_values))
+      #template = jinja_environment.get_template('myfreeslots.html')
+      #self.response.out.write(template.render(template_values))
     else:
       self.redirect(self.request.host_url)
 

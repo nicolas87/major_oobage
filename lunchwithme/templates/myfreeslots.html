@@ -207,8 +207,7 @@
 	    <td>{{ freeslot.free_start_hour  }} : {{ freeslot.free_start_min }}</td>
 		<td>{{ freeslot.free_end_hour  }} : {{ freeslot.free_end_min }}</td>
 		<td>{{ freeslot.free_venue  }}</td>
-		<td>{{ freeslot.key.id }} ID, debug</td>
-		<td><a href="/delfreeslots?free_day={{freeslot.free_day}}&free_month=freeslot.free_month&"> Delete </a>
+		<td><a href="/delfreeslots?delid={{freeslot.key.id}}"> Delete </a>
 	  </tr>
 	  {% endfor %}
 	</tbody>
