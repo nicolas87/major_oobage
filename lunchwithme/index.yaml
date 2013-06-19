@@ -23,6 +23,12 @@ indexes:
     direction: desc
 
 - kind: Freeslots
+  properties:
+  - name: username
+  - name: free_month
+    direction: desc
+
+- kind: Freeslots
   ancestor: yes
   properties:
   - name: date

@@ -48,6 +48,7 @@ class Freeslots(db.Model):
   free_end_min = db.StringProperty()
   free_venue = db.StringProperty()
   select = db.StringProperty()
+  username = db.StringProperty(required=True)
   
 class AddFreeSlots(webapp2.RequestHandler):
   """ Add freeslots to the datastore """
@@ -69,6 +70,7 @@ class AddFreeSlots(webapp2.RequestHandler):
     freeslot.free_end_min = self.request.get('end_min')
     freeslot.free_venue = self.request.get('venue')
     freeslot.select = self.request.get('select')
+    freeslot.username = users.get_current_user().email()
     freeslot.put()
     self.redirect('/myfreeslots')	
 
@@ -76,18 +78,20 @@ class DelFreeSlots(webapp2.RequestHandler):
   """ Del freeslots to the datastore """
   def post(self):	
 	# Delete freeslots
-    delete_freeslots = db.GqlQuery("SELECT * "
-                                   "FROM Freeslots "
-                                   "WHERE freeslot.select='YES'",
-                                  ) 
-    result = delete_freeslots.get()
-    db.delete(result)
+    parent_key = db.Key.from_path('Persons', users.get_current_user().email())
+    #delete_freeslots = db.GqlQuery("SELECT * "
+    #                              "FROM Freeslots "
+    #                             "WHERE freeslot.select='YES'",
+    #							   parent_key
+    #                             ) 
+    #result = delete_freeslots.fetch(10)
+    #db.delete(result)
 	
     template_values = {
         'user_mail': users.get_current_user().email(),
         'logout': users.create_logout_url(self.request.host_url),
         'freeslots': query,
-        } 
+    } 
 		
     template = jinja_environment.get_template('myfreeslots.html')
     self.response.out.write(template.render(template_values))	
@@ -102,17 +106,16 @@ class MyFreeSlots(webapp2.RequestHandler):
       # Retrieve person
       parent_key = db.Key.from_path('Persons', users.get_current_user().email())
 
-      query = db.GqlQuery("SELECT * "
-                          "FROM Freeslots "
-                          "WHERE ANCESTOR IS :1 "
-                          "ORDER BY free_month DESC",
-                          parent_key
-						 )
+      query = Freeslots.gql(
+                          "WHERE username = :userN ORDER BY free_month DESC",
+					      userN=users.get_current_user().email())
+						 
 
       template_values = {
         'user_mail': users.get_current_user().email(),
         'logout': users.create_logout_url(self.request.host_url),
         'freeslots': query,
+		
         } 
 
       template = jinja_environment.get_template('myfreeslots.html')
