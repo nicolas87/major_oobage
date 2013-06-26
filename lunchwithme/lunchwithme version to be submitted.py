@@ -9,6 +9,7 @@ import time
 from google.appengine.ext import db
 from google.appengine.api import users
 from datetime import date 
+#from google.appengine.ext.webapp import template #added this! to remove?
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__) + "/templates"))
@@ -43,9 +44,10 @@ class Freeslots(db.Model):
   free_end_hour = db.StringProperty()
   free_end_min = db.StringProperty()
   free_venue = db.StringProperty()
+  select = db.StringProperty()
   free_date = db.DateProperty()
   free_datep = db.StringProperty()
-  email = db.StringProperty()
+  username = db.StringProperty()
 
 class SearchDate(db.Model):
   """Models a date input with search_day, search_month, search_year, search_date and search_datep"""
@@ -74,21 +76,45 @@ class AddFreeSlots(webapp2.RequestHandler):
     freeslot.free_end_hour = self.request.get('end_hour')
     freeslot.free_end_min = self.request.get('end_min')
     freeslot.free_venue = self.request.get('venue')
+    freeslot.select = self.request.get('select')
     freeslot.free_date = datetime.date(freeslot.free_year, freeslot.free_month, freeslot.free_day)
     freeslot.free_datep = date(freeslot.free_year, freeslot.free_month, freeslot.free_day).isoformat()
-    freeslot.email = person.key().name()
     freeslot.put()
     self.redirect('/myfreeslots')	
 
 class DelFreeSlots(webapp2.RequestHandler):
   """ Del freeslots to the datastore """
   def get(self):  
+  # Delete freeslots
+    #parent_key = db.Key.from_path('Persons', users.get_current_user().email())
+    #delete_freeslots = db.GqlQuery("SELECT * "
+    #                              "FROM Freeslots "
+    #                             "WHERE freeslot.select='YES'",
+    #                parent_key
+    #                             ) 
+    #result = delete_freeslots.fetch(10)
+    #db.delete(result)
     user = users.get_current_user()
     if user:
      parent_key = db.Key.from_path('Persons', users.get_current_user().email())
      data_id=self.request.get('delid')
      query=Freeslots.get_by_id(int(data_id),parent_key)
      query.delete()
+
+     #query1 = db.GqlQuery("SELECT * "
+     #                     "FROM Freeslots "
+     #                     "WHERE ANCESTOR IS :1 ",
+     #                     parent_key
+     #        )
+
+     #template_values = {
+     #    'user_mail': users.get_current_user().email(),
+     #    'logout': users.create_logout_url(self.request.host_url),
+     #    'freeslots': query1,
+     #} 
+     #commented out below. is it necessary?   
+     #template = jinja_environment.get_template('myfreeslots.html')
+     #self.response.out.write(template.render(template_values)) 
      self.redirect('/myfreeslots')
     else:
      self.redirect(self.request.host_url)
@@ -179,14 +205,11 @@ class DisplayDate(webapp2.RequestHandler):
     search_date = datetime.date(search_year, search_month, search_day)
     search_datep = date(search_year, search_month, search_day).isoformat()
     
+    target = search_datep
     # Retrieve people with common free date
     #parent_key = db.Key.from_path('Freeslots', target)
 
-    query = db.GqlQuery("SELECT * "
-                        "FROM Freeslots "
-                        "WHERE free_datep = :1",
-                        search_datep
-                        )
+    query = db.GqlQuery("SELECT * FROM Persons")
 
     #query = db.GqlQuery("SELECT * "
     #                    "FROM Persons "
@@ -195,8 +218,8 @@ class DisplayDate(webapp2.RequestHandler):
   
     template_values = {
       'user_mail': users.get_current_user().email(),
-      'target_date': search_datep,
-      'freeslots': query,
+      'target_date': target,
+      'target_mail': query,
       'logout': users.create_logout_url(self.request.host_url),
       } 
     template = jinja_environment.get_template('displaydate.html')

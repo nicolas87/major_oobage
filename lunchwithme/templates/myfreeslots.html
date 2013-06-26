@@ -6,6 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
 		<link href="../bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+		<!--link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
 		<title>Lunch with Me</title>
 	</head>
 	
@@ -33,7 +34,8 @@
 							<li><a href="/date">Who's free?</a></li>
 							<li><a href="{{ logout }}">Logout</a></li>
 						</ul>
-						<p style="position:absolute; TOP:10px; LEFT:1300px"> Welcome, {{ user_mail }}!</p>
+						<!--<p style="position:absolute; TOP:10px; LEFT:1300px"> Welcome, {{ user_mail }}!</p>-->
+						<p style="float:right; margin-top:10px"> Welcome, {{ user_mail }}!</p>
 						<!-- .nav, .navbar-search, .navbar-form, etc -->
 					</div>
  
@@ -43,7 +45,7 @@
 		
 		<form  action="/addfreeslots" method="post">  
 	<fieldset>
-		<div class = "row-fluid">
+		<div class = "row-fluid" >
 	    <p> Enter your free date: </p>
 	    <div class="span12">  
 			<select name="day">
@@ -80,18 +82,18 @@
 				<option value="31">31
 			</select>
 			<select name="month">
-				<option value="Jan">January
-				<option value="Feb">February
-				<option value="Mar">March
-				<option value="Apr">April
-				<option value="May">May
-				<option value="Jun">June
-				<option value="Jul">July
-				<option value="Aug">August
-				<option value="Sep">September
-				<option value="Oct">October
-				<option value="Nov">November
-				<option value="Dec">December
+				<option value="1">January
+				<option value="2">February
+				<option value="3">March
+				<option value="4">April
+				<option value="5">May
+				<option value="6">June
+				<option value="7">July
+				<option value="8">August
+				<option value="9">September
+				<option value="10">October
+				<option value="11">November
+				<option value="12">December
 			</select>
 			<select name="year">
 				<option value="2013">2013
@@ -197,22 +199,21 @@
 	<h4> My Free Slots </h4>
       <table class="table table-bordered table-striped" name="myfreeslotstable">
 	<thead>
-	  <tr><th width="5%"></th><th width="23%">Date</th><th width="23%">From</th><th width="23%">To</th><th width="23%">At</th></tr>
+	  <tr><th width="23%">Date</th><th width="23%">From</th><th width="23%">To</th><th width="23%">At</th><th width="8%"></th></tr>
 	</thead>
 	<tbody>
 	  {% for freeslot in freeslots %}
 	  <tr>
-		<td><input type="checkbox" name="select" value="YES" /></td>
-		<td>{{ freeslot.free_day }} {{ freeslot.free_month }} {{ freeslot.free_year }} </td>
+		<td>{{ freeslot.free_datep }} </td>
 	    <td>{{ freeslot.free_start_hour  }} : {{ freeslot.free_start_min }}</td>
 		<td>{{ freeslot.free_end_hour  }} : {{ freeslot.free_end_min }}</td>
 		<td>{{ freeslot.free_venue  }}</td>
-		<td><a href="/delfreeslots?delid={{freeslot.key.id}}"> Delete </a>
+		<td><a href="/delfreeslots?delid={{freeslot.key().id()}}"> Delete </a></td>
 	  </tr>
 	  {% endfor %}
 	</tbody>
       </table>
-	<br><p><input type="submit" value="Delete"></p>
+<!--	<br><p><input type="submit" value="Delete"></p> -->
 	</fieldset>
       </form>
 		<script src="http://code.jquery.com/jquery.js"></script>

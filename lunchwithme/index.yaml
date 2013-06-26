@@ -12,6 +12,11 @@ indexes:
 
 - kind: Freeslots
   properties:
+  - name: free_month
+    direction: desc
+
+- kind: Freeslots
+  properties:
   - name: month
   - name: day
   - name: year
@@ -20,12 +25,7 @@ indexes:
   - name: end_hour
   - name: end_min
   - name: venue
-    direction: desc
-
-- kind: Freeslots
-  properties:
-  - name: username
-  - name: free_month
+  - name: email
     direction: desc
 
 - kind: Freeslots

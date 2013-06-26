@@ -49,8 +49,8 @@
 	<tbody>
 	  {% for freeslot in freeslots %}
 	  <tr>
-		<td>{{ freeslot.free_day }} {{ freeslot.free_month }} {{ freeslot.free_year }} </td>
-	    <td>{{ freeslot.free_start_hour  }} : {{ freeslot.free_start_min }}</td>
+		<td>{{ freeslot.free_datep}}</td>
+		<td>{{ freeslot.free_start_hour  }} : {{ freeslot.free_start_min }}</td>
 		<td>{{ freeslot.free_end_hour  }} : {{ freeslot.free_end_min }}</td>
 		<td>{{ freeslot.free_venue  }}</td>
 	  </tr>

@@ -47,12 +47,13 @@
 	  <tr><th width="25%">Email</th><th width="25%">From</th><th width="25%">To</th><th width="25%">At</th></tr>
 	</thead>
 	<tbody>
-	  {% for freeslot in freeslots %}
+	  {% for person in target_mail %}
 	  <tr>
-	  	<td>{{freeslot.email}} </td>
-	  	<td>{{freeslot.free_start_hour}}:{{freeslot.free_start_min}}</td>
-	  	<td>{{freeslot.free_end_hour}}:{{freeslot.free_end_min}}</td>
-	  	<td>{{freeslot.free_venue}}</td>
+	  	<td> {{person.email}} </td>
+		<td>{{ target_mail }} </td>
+	    <td>{{ freeslot.free_start_hour  }} : {{ freeslot.free_start_min }}</td>
+		<td>{{ freeslot.free_end_hour  }} : {{ freeslot.free_end_min }}</td>
+		<td>{{ freeslot.free_venue  }}</td>
 	  </tr>
 	  {% endfor %}
 	</tbody>
