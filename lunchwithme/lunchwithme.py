@@ -32,6 +32,8 @@ class MainPage(webapp2.RequestHandler):
 class Persons(db.Model):
   """Models a person identified by email"""
   email = db.StringProperty()
+  image = db.BlobProperty()
+  image_thumbnail = db.BlobProperty()
   
 class Freeslots(db.Model):
   """Models a freeslot with free_month, free_day, free_year, free_start_hour, free_start_min, free_end_hour, free_end_min and free_venue."""
