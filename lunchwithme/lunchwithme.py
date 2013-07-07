@@ -204,6 +204,52 @@ class DisplayDate(webapp2.RequestHandler):
     template = jinja_environment.get_template('displaydate.html')
     self.response.out.write(template.render(template_values))
 
+class Profile(webapp2.RequestHandler):
+  def get(self):
+    user = users.get_current_user()
+    if user:
+      template_values = {
+        'user_mail': users.get_current_user().email(),
+        'logout': users.create_logout_url(self.request.host_url),
+      } 
+      template = jinja_environment.get_template('profile.html')
+      self.response.out.write(template.render(template_values))
+    else:
+      self.redirect(self.request.host_url)
+  def post(self):
+    #process image here:
+    # Get the actual data for the picture
+    img_data = self.request.POST.get('picfile').file.read()
+    try:
+      img = images.Image(img_data)
+      # Basically, we just want to make sure it's a PNG
+      # since we don't have a good way to determine image type
+      # through the API, but the API throws an exception
+      # if you don't do any transforms, so go ahead and use im_feeling_lucky.
+      img.im_feeling_lucky()
+      png_data = img.execute_transforms(images.PNG)
+
+      img.resize(60, 100)
+      thumbnail_data = img.execute_transforms(images.PNG)
+
+      Persons(email=users.get_current_user().email(),
+              image=png_data,
+              image_thumbnail=thumbnail_data.put())
+
+      self.redirect('/profile')
+    except images.BadImageError:
+      self.error(400)
+      self.response.out.write(
+          'Sorry, we had a problem processing the image provided.')
+    except images.NotImageError:
+      self.error(400)
+      self.response.out.write(
+          'Sorry, we don\'t recognize that image format.'
+          'We can process JPEG, GIF, PNG, BMP, TIFF, and ICO files.')
+    except images.LargeImageError:
+      self.error(400)
+      self.response.out.write(
+          'Sorry, the image provided was too large for us to process.')
 
 app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
                                ('/friends', FriendsSearch),
@@ -212,5 +258,6 @@ app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
                                ('/delfreeslots', DelFreeSlots),							   
                                ('/myfreeslots', MyFreeSlots),
                                ('/displayfriend', DisplayFriends),
-                               ('/displaydate', DisplayDate)],
+                               ('/displaydate', DisplayDate),
+                               ('/profile', Profile)],
                               debug=True)

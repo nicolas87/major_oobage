@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="../stylesheets/main.css"/>
+		<!-- Bootstrap -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
+		<link href="../bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+		<title>Lunch with Me</title>
+	</head>
+	
+	<body>
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="container">
+ 
+					<!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</a>
+ 
+					<!-- Be sure to leave the brand out there if you want it shown -->
+					<a class="brand" href="#">Lunch with Me!</a>
+					<ul class="nav">
+							<li><a href="/lunchwithme">Home</a></li>
+							<li><a href="/myfreeslots">My Free Slots</a></li>
+							<li ><a href="/friends">Friends</a></li>
+							<li><a href="/date">Who's free?</a></li>
+							<li class="active"><a href="/profile">Profile</a></li>
+							<li><a href="{{ logout }}">Logout</a></li>
+						</ul>
+						<p style="position:absolute; TOP:10px; LEFT:1000px"> Welcome, {{ user_mail }}!</p>
+ 
+					<!-- Everything you want hidden at 940px or less, place within here -->
+					<div class="nav-collapse collapse">
+						
+						<!-- .nav, .navbar-search, .navbar-form, etc -->
+					</div>
+ 
+				</div>
+			</div>
+		</div>
+	  
+	<h4> Your profile </h4>
+      <table class="table table-bordered table-striped" >
+	<thead>
+	  <tr><th width="25%">Date</th><th width="25%">From</th><th width="25%">To</th><th width="25%">At</th></tr>
+	</thead>
+	<tbody>
+	  <form action='/upload' method='post'
+  enctype='multipart/form-data'>
+ 
+    Upload new profile image:
+    <input type='file' name='picfile'>
+  </div>
+  <input type='submit' value='Send'>
+</form>
+	</tbody>
+      </table>
+		<script src="http://code.jquery.com/jquery.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+	</body>
+</html>
