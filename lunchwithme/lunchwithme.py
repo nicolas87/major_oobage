@@ -32,9 +32,11 @@ class MainPage(webapp2.RequestHandler):
 class Persons(db.Model):
   """Models a person identified by email"""
   email = db.StringProperty()
-  image = db.BlobProperty()
-  image_thumbnail = db.BlobProperty()
-  
+  # # data = db.BlobProperty()
+  # image_thumbnail = db.BlobProperty()
+
+class Imagedb(db.Model):
+  data=db.BlobProperty()  
 class Freeslots(db.Model):
   """Models a freeslot with free_month, free_day, free_year, free_start_hour, free_start_min, free_end_hour, free_end_min and free_venue."""
   free_day = db.IntegerProperty()
@@ -203,7 +205,24 @@ class DisplayDate(webapp2.RequestHandler):
       } 
     template = jinja_environment.get_template('displaydate.html')
     self.response.out.write(template.render(template_values))
+class Image(webapp2.RequestHandler):
+    def get(self):
 
+        # parent_key=db.Key.from_path('Persons', self.request.get('img_id') )
+        parent_key=db.Key.from_path('Persons', users.get_current_user().email())
+        
+        #query=Imagedb(parent=parent_key)
+
+        query = db.GqlQuery("SELECT data "
+                        "FROM Imagedb "
+                        "WHERE ANCESTOR IS :1 ",
+                        parent_key)
+
+        if query:
+            self.response.headers['Content-Type'] = 'image/png'
+            self.response.out.write(query)
+        else:
+             self.response.write('No image')
 class Profile(webapp2.RequestHandler):
   def get(self):
     user = users.get_current_user()
@@ -217,29 +236,23 @@ class Profile(webapp2.RequestHandler):
     else:
       self.redirect(self.request.host_url)
   def post(self):
-    img = self.request.get('picfile')
-    image_thumbnail = images.resize(img,60,100)
+      parent_key = db.Key.from_path('Persons', users.get_current_user().email())
+      person = db.get(parent_key)
+      if person == None:
+        newPerson = Persons(key_name=users.get_current_user().email())
+        newPerson.put()
+    
+      iDB = Imagedb(parent=parent_key)
+      img = self.request.get('picfile')
+    #(email=users.get_current_user().email(),
+     #        data=db.Blob(img),
+      #       )
+      iDB.data=db.Blob(img)
+      iDB.put()
+             # image_thumbnail=db.Blob(img_thumbnail))
+    # Persons.put()
 
-    #process image here:
-    # Get the actual data for the picture
-    # img_data = self.request.POST.get('picfile').file.read()
-    # try:
-    #   img = images.Image(img_data)
-    #   # Basically, we just want to make sure it's a PNG
-    #   # since we don't have a good way to determine image type
-    #   # through the API, but the API throws an exception
-    #   # if you don't do any transforms, so go ahead and use im_feeling_lucky.
-    #   img.im_feeling_lucky()
-    #   png_data = img.execute_transforms(images.PNG)
-
-    #   img.resize(60, 100)
-      # thumbnail_data = img.execute_transforms(images.PNG)
-
-    Persons(email=users.get_current_user().email(),
-             image=db.Blob(img),
-             image_thumbnail=db.Blob(img_thumbnail))
-
-    self.redirect('/profile')
+      self.redirect('/profile')
 #    except images.BadImageError:
 #     self.error(400)
 #      self.response.out.write(
@@ -262,5 +275,6 @@ app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
                                ('/myfreeslots', MyFreeSlots),
                                ('/displayfriend', DisplayFriends),
                                ('/displaydate', DisplayDate),
+                               ('/img', Image),
                                ('/profile', Profile)],
                               debug=True)
