@@ -5,7 +5,7 @@ import os
 import datetime
 import time
 
-
+from google.appengine.api import images
 from google.appengine.ext import db
 from google.appengine.api import users
 from datetime import date 
@@ -217,39 +217,42 @@ class Profile(webapp2.RequestHandler):
     else:
       self.redirect(self.request.host_url)
   def post(self):
+    img = self.request.get('picfile')
+    image_thumbnail = images.resize(img,60,100)
+
     #process image here:
     # Get the actual data for the picture
-    img_data = self.request.POST.get('picfile').file.read()
-    try:
-      img = images.Image(img_data)
-      # Basically, we just want to make sure it's a PNG
-      # since we don't have a good way to determine image type
-      # through the API, but the API throws an exception
-      # if you don't do any transforms, so go ahead and use im_feeling_lucky.
-      img.im_feeling_lucky()
-      png_data = img.execute_transforms(images.PNG)
+    # img_data = self.request.POST.get('picfile').file.read()
+    # try:
+    #   img = images.Image(img_data)
+    #   # Basically, we just want to make sure it's a PNG
+    #   # since we don't have a good way to determine image type
+    #   # through the API, but the API throws an exception
+    #   # if you don't do any transforms, so go ahead and use im_feeling_lucky.
+    #   img.im_feeling_lucky()
+    #   png_data = img.execute_transforms(images.PNG)
 
-      img.resize(60, 100)
-      thumbnail_data = img.execute_transforms(images.PNG)
+    #   img.resize(60, 100)
+      # thumbnail_data = img.execute_transforms(images.PNG)
 
-      Persons(email=users.get_current_user().email(),
-              image=png_data,
-              image_thumbnail=thumbnail_data.put())
+    Persons(email=users.get_current_user().email(),
+             image=db.Blob(img),
+             image_thumbnail=db.Blob(img_thumbnail))
 
-      self.redirect('/profile')
-    except images.BadImageError:
-      self.error(400)
-      self.response.out.write(
-          'Sorry, we had a problem processing the image provided.')
-    except images.NotImageError:
-      self.error(400)
-      self.response.out.write(
-          'Sorry, we don\'t recognize that image format.'
-          'We can process JPEG, GIF, PNG, BMP, TIFF, and ICO files.')
-    except images.LargeImageError:
-      self.error(400)
-      self.response.out.write(
-          'Sorry, the image provided was too large for us to process.')
+    self.redirect('/profile')
+#    except images.BadImageError:
+#     self.error(400)
+#      self.response.out.write(
+#          'Sorry, we had a problem processing the image provided.')
+#    except images.NotImageError:
+#      self.error(400)
+#      self.response.out.write(
+#          'Sorry, we don\'t recognize that image format.'
+#          'We can process JPEG, GIF, PNG, BMP, TIFF, and ICO files.')
+#    except images.LargeImageError:
+#      self.error(400)
+#      self.response.out.write(
+#          'Sorry, the image provided was too large for us to process.')
 
 app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
                                ('/friends', FriendsSearch),
