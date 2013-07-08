@@ -44,21 +44,19 @@
 		</div>
 	  
 	<h4> Your profile </h4>
-      <table class="table table-bordered table-striped" >
-	<thead>
-	  <tr><th width="25%">Date</th><th width="25%">From</th><th width="25%">To</th><th width="25%">At</th></tr>
-	</thead>
-	<tbody>
+	<p> Current profile image: </p>
+
+	<img length=200 px; width=200 px; class="img-polaroid" src="img?img_id={{ user_mail }}"></img>
+
 	  <form action='/profile' method='post'
   enctype='multipart/form-data'>
  
     Upload new profile image:
     <input type='file' name='picfile'>
   </div>
-  <input type='submit' value='Send'>
+  <input type='submit' value='Upload picture'>
 </form>
-	</tbody>
-      </table>
+	
 		<script src="http://code.jquery.com/jquery.js"></script>
 		<script src="js/bootstrap.min.js"></script>
 	</body>
