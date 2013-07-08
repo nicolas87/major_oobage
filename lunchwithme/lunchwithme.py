@@ -212,17 +212,15 @@ class Image(webapp2.RequestHandler):
         parent_key=db.Key.from_path('Persons', users.get_current_user().email())
         
         #query=Imagedb(parent=parent_key)
+        query = Imagedb.gql("WHERE ANCESTOR IS :1",parent_key)
+        result = query.get()
+       
 
-        query = db.GqlQuery("SELECT data "
-                        "FROM Imagedb "
-                        "WHERE ANCESTOR IS :1 ",
-                        parent_key)
-
-        if query:
-            self.response.headers['Content-Type'] = 'image/png'
-            self.response.out.write(query)
+        if result:
+          self.response.headers['Content-Type'] = 'image/jpeg'
+          self.response.out.write(result.data)
         else:
-             self.response.write('No image')
+         self.response.write('No image')
 class Profile(webapp2.RequestHandler):
   def get(self):
     user = users.get_current_user()
@@ -244,6 +242,8 @@ class Profile(webapp2.RequestHandler):
     
       iDB = Imagedb(parent=parent_key)
       img = self.request.get('picfile')
+    #  img.im_feeling_lucky()
+    #  png_data=img.execute_transforms(images.PNG)
     #(email=users.get_current_user().email(),
      #        data=db.Blob(img),
       #       )
