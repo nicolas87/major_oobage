@@ -246,7 +246,9 @@ class Profile(webapp2.RequestHandler):
       query = ProfileDB.gql("WHERE ANCESTOR IS :1",parent_key)
       result = query.get()
       if result:
-        result.delete()
+        for results in query:
+          #tmp=results.get()
+          results.delete()
         
       iDB = ProfileDB(parent=parent_key)
       img = self.request.get('picfile')
