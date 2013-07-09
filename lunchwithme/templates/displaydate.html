@@ -46,11 +46,12 @@
 	<h4> People with free slots on {{ target_date }} </h4>
       <table class="table table-bordered table-striped" >
 	<thead>
-	  <tr><th width="25%">Email</th><th width="25%">From</th><th width="25%">To</th><th width="25%">At</th></tr>
+	  <tr><th width="10%">Picture</th><th width="20%">Email</th><th width="20%">From</th><th width="20%">To</th><th width="20%">At</th></tr>
 	</thead>
 	<tbody>
 	  {% for freeslot in freeslots %}
 	  <tr>
+	  	<td><img height=150 px width=150 px src='/img?img_id={{freeslot.email}}'></img>
 	  	<td>{{freeslot.email}} </td>
 	  	<td>{{freeslot.free_start_hour}}:{{freeslot.free_start_min}}</td>
 	  	<td>{{freeslot.free_end_hour}}:{{freeslot.free_end_min}}</td>
