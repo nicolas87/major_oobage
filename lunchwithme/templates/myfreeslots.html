@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link type="text/css" rel="stylesheet" href="../stylesheets/main.css"/>
 		<!-- Bootstrap -->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link href="../bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -220,10 +219,10 @@
     <h3>Edit slot</h3>
   </div>
   <div class="modal-body">
-<form  action="#" method="post">  
+<form  action="/editslot?id={{freeslot.key().id()}}" method="post">  
 	<fieldset>
 		<div class = "row-fluid" >
-	    <p> Enter your free date: </p>
+	    <p> Enter your free date:</p>
 	    <div class="span12">  
 			<select name="day">
 				<option value="1">1
