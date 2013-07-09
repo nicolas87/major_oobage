@@ -164,11 +164,13 @@ class DisplayFriends(webapp2.RequestHandler):
                         "WHERE ANCESTOR IS :1 ",
                         parent_key)
 
+    img_url = '/img?img_id=' + target
     template_values = {
       'user_mail': users.get_current_user().email(),
       'target_mail': target,
       'logout': users.create_logout_url(self.request.host_url),
       'freeslots': query,
+      'profile_img': img_url
       } 
     template = jinja_environment.get_template('displayfriend.html')
     self.response.out.write(template.render(template_values))
@@ -243,6 +245,7 @@ class Profile(webapp2.RequestHandler):
       iDB = Imagedb(parent=parent_key)
       img = self.request.get('picfile')
       iDB.data=db.Blob(img)
+      iDB.put()
       self.redirect('/profile')
 
 app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
