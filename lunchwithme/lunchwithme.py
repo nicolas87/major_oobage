@@ -206,9 +206,11 @@ class DisplayDate(webapp2.RequestHandler):
     template = jinja_environment.get_template('displaydate.html')
     self.response.out.write(template.render(template_values))
 class Image(webapp2.RequestHandler):
+    """ serves image """
     def get(self):
-
-        parent_key=db.Key.from_path('Persons', users.get_current_user().email())
+        
+        img_id=self.request.get('img_id')
+        parent_key=db.Key.from_path('Persons', img_id)
         
         query = Imagedb.gql("WHERE ANCESTOR IS :1",parent_key)
         result = query.get()
@@ -218,7 +220,7 @@ class Image(webapp2.RequestHandler):
           self.response.headers['Content-Type'] = 'image/jpeg'
           self.response.out.write(result.data)
         else:
-         self.response.write('No image')
+          self.redirect('/images/profile.png')
 class Profile(webapp2.RequestHandler):
   def get(self):
     user = users.get_current_user()
