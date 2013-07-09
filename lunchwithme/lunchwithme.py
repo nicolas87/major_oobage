@@ -208,10 +208,8 @@ class DisplayDate(webapp2.RequestHandler):
 class Image(webapp2.RequestHandler):
     def get(self):
 
-        # parent_key=db.Key.from_path('Persons', self.request.get('img_id') )
         parent_key=db.Key.from_path('Persons', users.get_current_user().email())
         
-        #query=Imagedb(parent=parent_key)
         query = Imagedb.gql("WHERE ANCESTOR IS :1",parent_key)
         result = query.get()
        
@@ -242,30 +240,8 @@ class Profile(webapp2.RequestHandler):
     
       iDB = Imagedb(parent=parent_key)
       img = self.request.get('picfile')
-    #  img.im_feeling_lucky()
-    #  png_data=img.execute_transforms(images.PNG)
-    #(email=users.get_current_user().email(),
-     #        data=db.Blob(img),
-      #       )
       iDB.data=db.Blob(img)
-      iDB.put()
-             # image_thumbnail=db.Blob(img_thumbnail))
-    # Persons.put()
-
       self.redirect('/profile')
-#    except images.BadImageError:
-#     self.error(400)
-#      self.response.out.write(
-#          'Sorry, we had a problem processing the image provided.')
-#    except images.NotImageError:
-#      self.error(400)
-#      self.response.out.write(
-#          'Sorry, we don\'t recognize that image format.'
-#          'We can process JPEG, GIF, PNG, BMP, TIFF, and ICO files.')
-#    except images.LargeImageError:
-#      self.error(400)
-#      self.response.out.write(
-#          'Sorry, the image provided was too large for us to process.')
 
 app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
                                ('/friends', FriendsSearch),
