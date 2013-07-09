@@ -242,7 +242,12 @@ class Profile(webapp2.RequestHandler):
       if person == None:
         newPerson = Persons(key_name=users.get_current_user().email())
         newPerson.put()
-    
+
+      query = ProfileDB.gql("WHERE ANCESTOR IS :1",parent_key)
+      result = query.get()
+      if result:
+        result.delete()
+        
       iDB = ProfileDB(parent=parent_key)
       img = self.request.get('picfile')
       iDB.data=db.Blob(img)
