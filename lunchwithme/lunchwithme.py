@@ -35,8 +35,9 @@ class Persons(db.Model):
   # # data = db.BlobProperty()
   # image_thumbnail = db.BlobProperty()
 
-class Imagedb(db.Model):
-  data=db.BlobProperty()  
+class ProfileDB(db.Model):
+  data=db.BlobProperty() #stores image data
+
 class Freeslots(db.Model):
   """Models a freeslot with free_month, free_day, free_year, free_start_hour, free_start_min, free_end_hour, free_end_min and free_venue."""
   free_day = db.IntegerProperty()
@@ -214,7 +215,7 @@ class Image(webapp2.RequestHandler):
         img_id=self.request.get('img_id')
         parent_key=db.Key.from_path('Persons', img_id)
         
-        query = Imagedb.gql("WHERE ANCESTOR IS :1",parent_key)
+        query = ProfileDB.gql("WHERE ANCESTOR IS :1",parent_key)
         result = query.get()
        
 
@@ -242,7 +243,7 @@ class Profile(webapp2.RequestHandler):
         newPerson = Persons(key_name=users.get_current_user().email())
         newPerson.put()
     
-      iDB = Imagedb(parent=parent_key)
+      iDB = ProfileDB(parent=parent_key)
       img = self.request.get('picfile')
       iDB.data=db.Blob(img)
       iDB.put()
