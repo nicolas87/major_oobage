@@ -44,6 +44,14 @@
 		</div>
 	  
 	<h4> Your profile </h4>
+	
+	<form action='/saveProfile' method='post'>
+	<label>Name:</label>
+	<input name='name' type="text" placeholder="{{ user_name }}">
+	<button type="submit" class="btn">Save changes</button>
+</form>
+	
+
 	<p> Current profile image: </p>
 
 	<img length=150 px; width=150 px; class="img-polaroid" src="img?img_id={{ user_mail }}"></img>

@@ -36,6 +36,9 @@ class Persons(db.Model):
   # image_thumbnail = db.BlobProperty()
 
 class ProfileDB(db.Model):
+  #key is email
+  email=db.StringProperty()
+  name=db.StringProperty()
   data=db.BlobProperty() #stores image data
 
 class Freeslots(db.Model):
@@ -213,48 +216,56 @@ class Image(webapp2.RequestHandler):
     def get(self):
         
         img_id=self.request.get('img_id')
-        parent_key=db.Key.from_path('Persons', img_id)
-        
-        query = ProfileDB.gql("WHERE ANCESTOR IS :1",parent_key)
-        result = query.get()
-       
-
+        myKey=db.Key.from_path('ProfileDB',img_id)
+        rec=db.get(myKey)
+        result = rec.data
         if result:
           self.response.headers['Content-Type'] = 'image/jpeg'
-          self.response.out.write(result.data)
+          self.response.out.write(result)
         else:
           self.redirect('/images/profile.png')
 class Profile(webapp2.RequestHandler):
   def get(self):
     user = users.get_current_user()
     if user:
+      #check if profile already created:
+      db_key=db.Key.from_path('ProfileDB',users.get_current_user().email())
+      profile=db.get(db_key)
+      if not profile:
+        profile=ProfileDB(key_name=users.get_current_user().email())
+        profile.email=users.get_current_user().email()
+        profile.put()
+      if profile.name:
+        username=profile.name
+      else:
+        username="Enter your name..."
       template_values = {
         'user_mail': users.get_current_user().email(),
         'logout': users.create_logout_url(self.request.host_url),
-      } 
+        'user_name': username
+      }
+
       template = jinja_environment.get_template('profile.html')
       self.response.out.write(template.render(template_values))
     else:
       self.redirect(self.request.host_url)
   def post(self):
-      parent_key = db.Key.from_path('Persons', users.get_current_user().email())
-      person = db.get(parent_key)
-      if person == None:
-        newPerson = Persons(key_name=users.get_current_user().email())
-        newPerson.put()
-
-      query = ProfileDB.gql("WHERE ANCESTOR IS :1",parent_key)
-      result = query.get()
-      if result:
-        for results in query:
-          #tmp=results.get()
-          results.delete()
-        
-      iDB = ProfileDB(parent=parent_key)
-      img = self.request.get('picfile')
-      iDB.data=db.Blob(img)
-      iDB.put()
+      myKey=db.Key.from_path('ProfileDB',users.get_current_user().email())
+      rec=db.get(myKey)
+      img=self.request.get('picfile')
+      rec.data=db.Blob(img)
+      rec.put()
       self.redirect('/profile')
+
+class saveProfile(webapp2.RequestHandler):
+  def post(self):
+    myKey=db.Key.from_path('ProfileDB',users.get_current_user().email())
+    #profile=ProfileDB(key_name=users.get_current_user().email())
+    uname=self.request.get('name')
+    rec=db.get(myKey)
+    rec.name=uname
+    rec.put()
+    self.redirect('/profile')
 
 app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
                                ('/friends', FriendsSearch),
@@ -265,5 +276,6 @@ app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
                                ('/displayfriend', DisplayFriends),
                                ('/displaydate', DisplayDate),
                                ('/img', Image),
+                               ('/saveProfile', saveProfile),
                                ('/profile', Profile)],
                               debug=True)
