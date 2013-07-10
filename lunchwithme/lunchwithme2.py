@@ -36,9 +36,6 @@ class Persons(db.Model):
   # image_thumbnail = db.BlobProperty()
 
 class ProfileDB(db.Model):
-  #key is email
-  email=db.StringProperty()
-  name=db.StringProperty()
   data=db.BlobProperty() #stores image data
 
 class Freeslots(db.Model):
@@ -54,7 +51,6 @@ class Freeslots(db.Model):
   free_date = db.DateProperty()
   free_datep = db.StringProperty()
   email = db.StringProperty()
-  name = db.StringProperty()
 
 class SearchDate(db.Model):
   """Models a date input with search_day, search_month, search_year, search_date and search_datep"""
@@ -86,10 +82,6 @@ class AddFreeSlots(webapp2.RequestHandler):
     freeslot.free_date = datetime.date(freeslot.free_year, freeslot.free_month, freeslot.free_day)
     freeslot.free_datep = date(freeslot.free_year, freeslot.free_month, freeslot.free_day).isoformat()
     freeslot.email = person.key().name()
-    #lets get the name if it exists.
-    myKey=db.Key.from_path('ProfileDB',users.get_current_user().email())
-    profile=db.get(myKey)
-    freeslot.name=profile.name
     freeslot.put()
     self.redirect('/myfreeslots')	
 
@@ -174,8 +166,6 @@ class DisplayFriends(webapp2.RequestHandler):
                         parent_key)
 
     img_url = '/img?img_id=' + target
-
-
     template_values = {
       'user_mail': users.get_current_user().email(),
       'target_mail': target,
@@ -204,10 +194,6 @@ class DisplayDate(webapp2.RequestHandler):
                         "WHERE free_datep = :1",
                         search_datep
                         )
-    for querys in query:
-      myKey=db.Key.from_path('ProfileDB',querys.email)
-      rec=db.get(myKey)
-      querys.name=rec.name
 
     #query = db.GqlQuery("SELECT * "
     #                    "FROM Persons "
@@ -227,59 +213,47 @@ class Image(webapp2.RequestHandler):
     def get(self):
         
         img_id=self.request.get('img_id')
-        myKey=db.Key.from_path('ProfileDB',img_id)
-        rec=db.get(myKey)
-        result = rec.data
+        parent_key=db.Key.from_path('Persons', img_id)
+        
+        query = ProfileDB.gql("WHERE ANCESTOR IS :1",parent_key)
+        result = query.get()
+       
+
         if result:
           self.response.headers['Content-Type'] = 'image/jpeg'
-          self.response.out.write(result)
+          self.response.out.write(result.data)
         else:
           self.redirect('/images/profile.png')
 class Profile(webapp2.RequestHandler):
   def get(self):
     user = users.get_current_user()
     if user:
-      #check if profile already created:
-      db_key=db.Key.from_path('ProfileDB',users.get_current_user().email())
-      profile=db.get(db_key)
-      if not profile:
-        profile=ProfileDB(key_name=users.get_current_user().email())
-        profile.email=users.get_current_user().email()
-        profile.name=profile.email
-        profile.put()
-      if profile.name != profile.email:
-        username=profile.name
-      else:
-        username="Enter your name..."
       template_values = {
         'user_mail': users.get_current_user().email(),
         'logout': users.create_logout_url(self.request.host_url),
-        'user_name': username
-      }
-
+      } 
       template = jinja_environment.get_template('profile.html')
       self.response.out.write(template.render(template_values))
     else:
       self.redirect(self.request.host_url)
   def post(self):
-      myKey=db.Key.from_path('ProfileDB',users.get_current_user().email())
-      rec=db.get(myKey)
-      img=self.request.get('picfile')
-      rec.data=db.Blob(img)
-      rec.put()
+      parent_key = db.Key.from_path('Persons', users.get_current_user().email())
+      person = db.get(parent_key)
+      if person == None:
+        newPerson = Persons(key_name=users.get_current_user().email())
+        newPerson.put()
+
+      query = ProfileDB.gql("WHERE ANCESTOR IS :1",parent_key)
+      result = query.get()
+      if result:
+        for results in query:
+          results.delete()
+        
+      iDB = ProfileDB(parent=parent_key)
+      img = self.request.get('picfile')
+      iDB.data=db.Blob(img)
+      iDB.put()
       self.redirect('/profile')
-
-class saveProfile(webapp2.RequestHandler):
-  def post(self):
-    myKey=db.Key.from_path('ProfileDB',users.get_current_user().email())
-    uname=self.request.get('name')
-    if uname:
-      rec=db.get(myKey)
-      rec.name=uname
-      rec.put()
-    #todo:update name in the freeslots
-    self.redirect('/profile')
-
 
 app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
                                ('/friends', FriendsSearch),
@@ -290,6 +264,5 @@ app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
                                ('/displayfriend', DisplayFriends),
                                ('/displaydate', DisplayDate),
                                ('/img', Image),
-                               ('/saveProfile', saveProfile),
                                ('/profile', Profile)],
                               debug=True)
