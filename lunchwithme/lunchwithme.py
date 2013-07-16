@@ -28,7 +28,7 @@ class MainPage(webapp2.RequestHandler):
       self.response.out.write(template.render(template_values))
     else:
       self.redirect(self.request.host_url)
-	  
+    
 class Persons(db.Model):
   """Models a person identified by email"""
   email = db.StringProperty()
@@ -73,25 +73,29 @@ class AddFreeSlots(webapp2.RequestHandler):
     if person == None:
       newPerson = Persons(key_name=users.get_current_user().email())
       newPerson.put()
-	  
-    freeslot = Freeslots(parent=parent_key)
-    freeslot.free_day = int(self.request.get('day'))
-    freeslot.free_month = int(self.request.get('month'))
-    freeslot.free_year = int(self.request.get('year'))
-    freeslot.free_start_hour = self.request.get('start_hour')
-    freeslot.free_start_min = self.request.get('start_min')
-    freeslot.free_end_hour = self.request.get('end_hour')
-    freeslot.free_end_min = self.request.get('end_min')
-    freeslot.free_venue = self.request.get('venue')
-    freeslot.free_date = datetime.date(freeslot.free_year, freeslot.free_month, freeslot.free_day)
-    freeslot.free_datep = date(freeslot.free_year, freeslot.free_month, freeslot.free_day).isoformat()
-    freeslot.email = person.key().name()
-    #lets get the name if it exists.
+    
     myKey=db.Key.from_path('ProfileDB',users.get_current_user().email())
     profile=db.get(myKey)
-    freeslot.name=profile.name
-    freeslot.put()
-    self.redirect('/myfreeslots')	
+    if not profile: #redirect person to profile page so that ProfileDB.name entry exists.
+      self.redirect('/profile')
+    else:
+      freeslot = Freeslots(parent=parent_key)
+      freeslot.free_day = int(self.request.get('day'))
+      freeslot.free_month = int(self.request.get('month'))
+      freeslot.free_year = int(self.request.get('year'))
+      freeslot.free_start_hour = self.request.get('start_hour')
+      freeslot.free_start_min = self.request.get('start_min')
+      freeslot.free_end_hour = self.request.get('end_hour')
+      freeslot.free_end_min = self.request.get('end_min')
+      freeslot.free_venue = self.request.get('venue')
+      freeslot.free_date = datetime.date(freeslot.free_year, freeslot.free_month, freeslot.free_day)
+      freeslot.free_datep = date(freeslot.free_year, freeslot.free_month, freeslot.free_day).isoformat()
+      freeslot.email = person.key().name()
+      freeslot.name=profile.name
+      freeslot.put()
+      self.redirect('/myfreeslots') 
+    
+
 
 class DelFreeSlots(webapp2.RequestHandler):
   """ Del freeslots to the datastore """
@@ -105,7 +109,7 @@ class DelFreeSlots(webapp2.RequestHandler):
      self.redirect('/myfreeslots')
     else:
      self.redirect(self.request.host_url)
-	
+  
 class MyFreeSlots(webapp2.RequestHandler):
   """ Form for getting and displaying wishlist items. """
   def get(self):
@@ -119,7 +123,7 @@ class MyFreeSlots(webapp2.RequestHandler):
                           "FROM Freeslots "
                           "WHERE ANCESTOR IS :1 ",
                           parent_key
-						 )
+             )
 
       template_values = {
         'user_mail': users.get_current_user().email(),
@@ -159,7 +163,7 @@ class DateSearch(webapp2.RequestHandler):
       self.response.out.write(template.render(template_values))
     else:
       self.redirect(self.request.host_url)
-	  
+    
 class DisplayFriends(webapp2.RequestHandler):
   """ Displays search friends result """
   def post(self):
@@ -277,7 +281,12 @@ class saveProfile(webapp2.RequestHandler):
       rec=db.get(myKey)
       rec.name=uname
       rec.put()
-    #todo:update name in the freeslots
+      #now we try to update name in freeslots:
+      updated = []
+      for entity in Freeslots.all().filter("email =", users.get_current_user().email()).fetch(100):
+        entity.name = uname
+        updated.append(entity)
+      db.put(updated)
     self.redirect('/profile')
 
 
@@ -285,7 +294,7 @@ app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
                                ('/friends', FriendsSearch),
                                ('/date', DateSearch),
                                ('/addfreeslots', AddFreeSlots),
-                               ('/delfreeslots', DelFreeSlots),							   
+                               ('/delfreeslots', DelFreeSlots),                
                                ('/myfreeslots', MyFreeSlots),
                                ('/displayfriend', DisplayFriends),
                                ('/displaydate', DisplayDate),
