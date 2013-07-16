@@ -5,6 +5,8 @@ import os
 import datetime
 import time
 
+import logging
+
 from google.appengine.api import images
 from google.appengine.ext import db
 from google.appengine.api import users
@@ -115,7 +117,16 @@ class MyFreeSlots(webapp2.RequestHandler):
   def get(self):
     user = users.get_current_user()
     if user:  # signed in already
-
+      #get present time
+      today=datetime.datetime.now()
+      today=today.replace(hour=0, minute=0,second=0,microsecond=0)
+      logging.info(today)
+      #delete all entries which are less than today's date
+      for entity in Freeslots.all().filter("email =",users.get_current_user().email()).fetch(100):
+        #logging.info(entity.free_date)
+        if entity.free_date < today.date():
+          entity.delete()
+          #logging.info("removing date %s",entity.free_date)
       # Retrieve person
       parent_key = db.Key.from_path('Persons', users.get_current_user().email())
 
@@ -169,6 +180,16 @@ class DisplayFriends(webapp2.RequestHandler):
   def post(self):
 
     target = self.request.get('email').rstrip()
+    #delete his old dates
+    #delete all entries which are less than today's date
+    today_date=datetime.datetime.now()
+    today_date=today_date.replace(hour=0,minute=0,second=0,microsecond=0)
+    today_date=today_date.date()
+    for entity in Freeslots.all().filter("email =",target).fetch(100):
+      logging.info(entity.free_date)
+      if entity.free_date < today_date:
+        entity.delete()
+        logging.info("removing date %s",entity.free_date)
     # Retrieve person
     parent_key = db.Key.from_path('Persons', target)
 
