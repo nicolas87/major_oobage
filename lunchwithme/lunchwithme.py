@@ -93,7 +93,7 @@ class AddFreeSlots(webapp2.RequestHandler):
       freeslot.free_venue = self.request.get('venue')
       freeslot.free_date = datetime.date(freeslot.free_year, freeslot.free_month, freeslot.free_day)
       freeslot.free_datep = date(freeslot.free_year, freeslot.free_month, freeslot.free_day).isoformat()
-      freeslot.email = person.key().name()
+      freeslot.email = users.get_current_user().email()
       freeslot.name=profile.name
       freeslot.put()
       self.redirect('/myfreeslots') 
