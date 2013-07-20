@@ -329,6 +329,22 @@ class saveProfile(webapp2.RequestHandler):
         updated.append(entity)
       db.put(updated)
     self.redirect('/profile')
+class displayDateProfile(webapp2.RequestHandler):
+  def get(self):
+    target_email=self.request.get('email')
+    myKey=db.Key.from_path('ProfileDB',target_email)
+    rec=db.get(myKey)
+    template_values = {
+      'user_mail': users.get_current_user().email(),
+      'logout': users.create_logout_url(self.request.host_url),
+      'target_name' : rec.name,
+      'target_description' : rec.description,
+      'target_email': target_email,
+
+    }
+    template = jinja_environment.get_template('displaydate_profile.html')
+    self.response.out.write(template.render(template_values))
+
 
 
 app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
@@ -341,5 +357,6 @@ app = webapp2.WSGIApplication([('/lunchwithme', MainPage),
                                ('/displaydate', DisplayDate),
                                ('/img', Image),
                                ('/saveProfile', saveProfile),
+                               ('/displaydateprofile', displayDateProfile),
                                ('/profile', Profile)],
                               debug=True)

@@ -43,24 +43,16 @@
 			</div>
 		</div>
 	  
-	<h4> People with free slots on {{ target_date }} </h4>
-      <table class="table table-bordered table-striped" >
-	<thead>
-	  <tr><th width="10%">Picture</th><th width="20%">Email</th><th width="20%">From</th><th width="20%">To</th><th width="20%">At</th></tr>
-	</thead>
-	<tbody>
-	  {% for freeslot in freeslots %}
-	  <tr>
-	  	<td style="text-align:center"><img height=150 px width=150 px src='/img?img_id={{freeslot.email}}'></img> 
-	  		<a href="displaydateprofile?email={{freeslot.email}}">{{freeslot.name}}</a></td>
-	  	<td>{{freeslot.email}}</td>
-	  	<td>{{freeslot.free_start_hour}}:{{freeslot.free_start_min}}</td>
-	  	<td>{{freeslot.free_end_hour}}:{{freeslot.free_end_min}}</td>
-	  	<td>{{freeslot.free_venue}}</td>
-	  </tr>
-	  {% endfor %}
-	</tbody>
-      </table>
+	<h4> Profile of {{target_name}} </h4>
+	<br>
+	<img src="/img?img_id={{target_email}}" length=150 px; width=150 px; class="img-polaroid">
+	<br>
+	Email:  {{target_email}}
+	<br>
+	Description: {{target_description}}
+	<br>
+	<a class="btn" href="javascript:history.go(-1)">Go Back</a>
+      
 		<script src="http://code.jquery.com/jquery.js"></script>
 		<script src="js/bootstrap.min.js"></script>
 	</body>
