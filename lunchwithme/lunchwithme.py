@@ -41,6 +41,7 @@ class ProfileDB(db.Model):
   #key is email
   email=db.StringProperty()
   name=db.StringProperty()
+  description=db.StringProperty()
   data=db.BlobProperty() #stores image data
 
 class Freeslots(db.Model):
@@ -200,8 +201,16 @@ class DisplayFriends(webapp2.RequestHandler):
 
     img_url = '/img?img_id=' + target
 
+    #get his name and description
+    myKey=db.Key.from_path('ProfileDB',target)
+    rec=db.get(myKey)
+    target_name=rec.name
+    target_description=rec.description
+
 
     template_values = {
+      'target_name': target_name,
+      'target_description': target_description,
       'user_mail': users.get_current_user().email(),
       'target_mail': target,
       'logout': users.create_logout_url(self.request.host_url),
@@ -271,7 +280,12 @@ class Profile(webapp2.RequestHandler):
         profile=ProfileDB(key_name=users.get_current_user().email())
         profile.email=users.get_current_user().email()
         profile.name=profile.email
+        profile.description="none"
         profile.put()
+      if profile.description=="none":
+        description="Enter your profile description..."
+      else:
+        description=profile.description
       if profile.name != profile.email:
         username=profile.name
       else:
@@ -279,7 +293,8 @@ class Profile(webapp2.RequestHandler):
       template_values = {
         'user_mail': users.get_current_user().email(),
         'logout': users.create_logout_url(self.request.host_url),
-        'user_name': username
+        'user_name': username,
+        'user_description' :description,
       }
 
       template = jinja_environment.get_template('profile.html')
@@ -298,6 +313,11 @@ class saveProfile(webapp2.RequestHandler):
   def post(self):
     myKey=db.Key.from_path('ProfileDB',users.get_current_user().email())
     uname=self.request.get('name')
+    description=self.request.get('description')
+    if description:
+      rec=db.get(myKey)
+      rec.description=description
+      rec.put()
     if uname:
       rec=db.get(myKey)
       rec.name=uname
